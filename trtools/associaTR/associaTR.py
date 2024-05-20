@@ -32,7 +32,7 @@ def _merge_arrays(a, b):
     a, b: np.ndarray
         2D arrays
     '''
-    
+
     # TODO these assertions should be moved elsewhere and made into understandable error messages
     assert len(a.shape) == 2 and len(b.shape) == 2
     assert len(set(a[:, 0]).intersection(b[:,0])) > 0
@@ -133,7 +133,7 @@ def perform_gwas_helper(
     #if binary != 'logistic':
     outfile.write('se_{}\tregression_R^2\t'.format(phenotype_name))
     outfile.flush()
-   
+
     print('{} samples in the VCF'.format(len(all_samples)), flush=True)
 
     if not same_samples:
@@ -191,7 +191,7 @@ def perform_gwas_helper(
     covars = (covars - np.mean(covars, axis=0))/np.std(covars, axis=0)
     outcome = covars[:, 1].copy()
     covars[:, 1] = 1 # reuse the column that was the outcome as the intercept
-   
+
     if plotting_phenotype_fname:
         plotting_phenotype = np.load(plotting_phenotype_fname)
         if not same_samples:
@@ -240,7 +240,7 @@ def perform_gwas_helper(
     batch_time = 0
     batch_size = 50
     total_time = 0
- 
+
     start_time = time.time()
     for gts, unique_alleles, chrom, pos, called_samples_filter, locus_filtered, locus_details in genotype_iter:
         assert len(locus_details) == len(extra_detail_fields)
@@ -272,6 +272,8 @@ def perform_gwas_helper(
                 len_*np.sum(dosages, axis=1) for len_, dosages in gts.items()
             ], axis=0)
         std = np.std(summed_gts)
+        if std == 0:
+            continue
         summed_gts = (summed_gts - np.mean(summed_gts))/np.std(summed_gts)
         covars[called_samples_filter, 0] = summed_gts
 
